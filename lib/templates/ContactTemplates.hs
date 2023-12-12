@@ -1,6 +1,6 @@
 module ContactTemplates where
 
-import Relude hiding (span)
+import Relude hiding (head, span)
 import Text.Blaze.Html5
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Blaze.Html5.Attributes qualified as HA
@@ -12,44 +12,46 @@ emptyNewContactPage = newContactPage mkEmptyContact []
 
 newContactPage :: Contact -> [Error] -> T.Text
 newContactPage contact errs = renderHtml $ do
-  docTypeHtml $
-    html $ do
-      body $ do
-        form ! HA.action "/contacts/new" ! HA.method "post" $ do
-          fieldset $ do
-            legend "Contact Values"
-            p $ do
-              label ! HA.for "email" $ "Email"
-              input ! HA.name "email" ! HA.id "email" ! HA.type_ "email" ! HA.placeholder "Email" ! HA.value (toValue $ email contact)
+  docTypeHtml $ do
+    head tailwindHeaders
 
-            p $ do
-              label ! HA.for "first_name" $ "First Name"
-              input ! HA.name "first_name" ! HA.id "first_name" ! HA.type_ "first_name" ! HA.placeholder "First Name" ! HA.value (toValue $ firstN contact)
+    body $ do
+      form ! HA.action "/contacts/new" ! HA.method "post" $ do
+        fieldset $ do
+          legend "Contact Values"
+          p $ do
+            label ! HA.for "email" $ "Email"
+            input ! HA.name "email" ! HA.id "email" ! HA.type_ "email" ! HA.placeholder "Email" ! HA.value (toValue $ email contact)
 
-            p $ do
-              label ! HA.for "last_name" $ "Last Name"
-              input ! HA.name "last_name" ! HA.id "last_name" ! HA.type_ "last_name" ! HA.placeholder "Last Name" ! HA.value (toValue $ lastN contact)
+          p $ do
+            label ! HA.for "first_name" $ "First Name"
+            input ! HA.name "first_name" ! HA.id "first_name" ! HA.type_ "first_name" ! HA.placeholder "First Name" ! HA.value (toValue $ firstN contact)
 
-            p $ do
-              label ! HA.for "phone" $ "Phone"
-              input ! HA.name "phone" ! HA.id "phone" ! HA.type_ "phone" ! HA.placeholder "Phone" ! HA.value (toValue $ phone contact)
+          p $ do
+            label ! HA.for "last_name" $ "Last Name"
+            input ! HA.name "last_name" ! HA.id "last_name" ! HA.type_ "last_name" ! HA.placeholder "Last Name" ! HA.value (toValue $ lastN contact)
 
-            p $ errorSpan errs
+          p $ do
+            label ! HA.for "phone" $ "Phone"
+            input ! HA.name "phone" ! HA.id "phone" ! HA.type_ "phone" ! HA.placeholder "Phone" ! HA.value (toValue $ phone contact)
 
-            button "Save"
-        p $ a ! HA.href "/contacts" $ "Back"
+          p $ errorSpan errs
+
+          button ! HA.class_ "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" $ "Save"
+      p $ a ! HA.href "/contacts" $ "Back"
 
 errorSpan :: [Error] -> Html
 errorSpan errs = toHtml $ (\e -> span ! HA.class_ "error" $ show e) <$> errs
 
 renderContactPage :: T.Text -> [Contact] -> T.Text
 renderContactPage query contacts = renderHtml $ do
-  docTypeHtml $
-    html $ do
-      body $ do
-        contactSearch query
-        contactsTable contacts
-        renderAddContact
+  docTypeHtml $ do
+    head tailwindHeaders
+
+    body $ do
+      contactSearch query
+      contactsTable contacts
+      renderAddContact
 
 contactSearch :: T.Text -> Html
 contactSearch query = do
@@ -79,3 +81,16 @@ contactTableRow c =
       td $ toHtml $ email c
       td $ a ! HA.href ("/contacts/" <> (toValue . ident) c <> "/edit") $ "Edit"
       td $ a ! HA.href ("/contacts/" <> (toValue . ident) c) $ "View"
+
+tailwindHeaders :: Html
+tailwindHeaders = do
+  script ! HA.src "https://cdn.tailwindcss.com" $ ""
+  script "tailwind.config = {\
+        \  theme: {\
+        \    extend: {\
+        \      colors: {\
+        \        clifford: '#da3g3d',\
+        \      }\
+        \    }\
+        \  }\
+        \}"
