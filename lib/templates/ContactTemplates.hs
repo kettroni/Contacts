@@ -37,8 +37,8 @@ newContactPage contact errs = renderHtml $ do
 
           p $ errorSpan errs
 
-          button ! HA.class_ "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" $ "Save"
-      p $ a ! HA.href "/contacts" $ "Back"
+          button ! btnPri $ "Save"
+      p $ a ! btnSnd ! HA.href "/contacts" $ "Back"
 
 errorSpan :: [Error] -> Html
 errorSpan errs = toHtml $ (\e -> span ! HA.class_ "error" $ show e) <$> errs
@@ -61,36 +61,41 @@ contactSearch query = do
 
 contactsTable :: [Contact] -> Html
 contactsTable cs = table $ do
-      thead $ do
-        tr "First name"
-        tr "Last name"
-        tr "Phone number"
-        tr "Email address"
-      tbody $ do
-        mconcat $ contactTableRow Relude.<$> cs
+  thead $ do
+    tr "First name"
+    tr "Last name"
+    tr "Phone number"
+    tr "Email address"
+  tbody $ do
+    mconcat $ contactTableRow <$> cs
 
 renderAddContact :: Html
-renderAddContact = p $ a ! HA.href "/contacts/new" $ "Add Contact"
+renderAddContact = p $ a ! btnPri ! HA.href "/contacts/new" $ "Add Contact"
 
 contactTableRow :: Contact -> Html
-contactTableRow c =
-    tr $ do
-      td $ toHtml $ firstN c
-      td $ toHtml $ lastN c
-      td $ toHtml $ phone c
-      td $ toHtml $ email c
-      td $ a ! HA.href ("/contacts/" <> (toValue . ident) c <> "/edit") $ "Edit"
-      td $ a ! HA.href ("/contacts/" <> (toValue . ident) c) $ "View"
+contactTableRow c = tr ! HA.class_ "odd:bg-white even:bg-slate-50" $ do
+  td $ toHtml $ firstN c
+  td $ toHtml $ lastN c
+  td $ toHtml $ phone c
+  td $ toHtml $ email c
+  td $ a ! HA.href ("/contacts/" <> (toValue . ident) c <> "/edit") $ "Edit"
+  td $ a ! HA.href ("/contacts/" <> (toValue . ident) c) $ "View"
 
 tailwindHeaders :: Html
 tailwindHeaders = do
   script ! HA.src "https://cdn.tailwindcss.com" $ ""
-  script "tailwind.config = {\
-        \  theme: {\
-        \    extend: {\
-        \      colors: {\
-        \        clifford: '#da3g3d',\
-        \      }\
-        \    }\
-        \  }\
-        \}"
+  -- script "tailwind.config = {\
+  --       \  theme: {\
+  --       \    extend: {\
+  --       \      colors: {\
+  --       \        clifford: '#da3g3d',\
+  --       \      }\
+  --       \    }\
+  --       \  }\
+  --       \}"
+
+btnPri :: Attribute
+btnPri = HA.class_ "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+
+btnSnd :: Attribute
+btnSnd = HA.class_ "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
