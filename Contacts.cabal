@@ -35,9 +35,10 @@ common commons
     default-extensions: OverloadedStrings,
                         NoImplicitPrelude
 
-    build-depends:      relude
+    build-depends:      relude,
+                        models
 
-executable Contacts
+executable contact-app
     -- Import common warning flags.
     import:           commons
 
@@ -49,13 +50,29 @@ executable Contacts
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-
-    -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.17.2.0,
-                      scotty ^>= 0.20.1,
-                      blaze-html ^>= 0.9.1,
-                      bytestring ^>= 0.11.4.0,
-                      text ^>= 2.0.2
+    build-depends:    scotty ^>= 0.20.1,
+                      http-types,
+                      html-templates,
+                      db
 
     -- Directories containing source files.
     hs-source-dirs:   app
+
+library db
+    import:           commons
+    exposed-modules:  Db
+    hs-source-dirs:   lib/db
+
+library html-templates
+    import:           commons
+    exposed-modules:  ContactTemplates
+    hs-source-dirs:   lib/templates
+    build-depends:    blaze-html ^>= 0.9.1,
+
+library models
+    exposed-modules:    Contact
+    default-extensions: OverloadedStrings,
+                        NoImplicitPrelude
+    build-depends:      relude,
+                        base ^>= 4.17.2.0,
+    hs-source-dirs:     lib/models
