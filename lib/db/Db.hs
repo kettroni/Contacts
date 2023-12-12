@@ -1,29 +1,10 @@
 module Db where
 import Contact
+import Relude
+import Data.Text.Lazy (singleton)
 
 getContacts :: [Contact]
-getContacts = [--  Contact { firstN = "Aatti"
-              --           , lastN = "Aattinen"
-              --           , phone = "04050605058"
-              --           , email = "Aatti.Aattinen@Aatti.fi"
-              --           , ident = 0
-              --           }
-              -- , Contact { firstN = "Batti"
-              --           , lastN = "Battinen"
-              --           , phone = "14050605058"
-              --           , email = "Batti.Battinen@Batti.fi"
-              --           , ident = 1
-              --           }
-              -- , Contact { firstN = "Catti"
-              --           , lastN = "Cattinen"
-              --           , phone = "24050605058"
-              --           , email = "Catti.Cattinen@Catti.fi"
-              --           , ident = 2
-              --           }
-              -- , Contact { firstN = "Datti"
-              --           , lastN = "Dattinen"
-              --           , phone = "34050605058"
-              --           , email = "Datti.Dattinen@Datti.fi"
-              --           , ident = 3
-              --           }
-              ]
+getContacts = do
+  i <- [65..85]
+  let x = singleton $ chr i
+  pure $ mkContact x x x x i
