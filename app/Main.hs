@@ -1,11 +1,11 @@
 module Main where
 
+import Relude
 import Web.Scotty as S
 import Data.Text.Lazy as T
 import ContactTemplates
-import Contact (mkContact, validateContact, mkEmptyContact)
+import Contact (mkContact, validateContact)
 import Db (getContacts)
-import Relude
 import Network.HTTP.Types (created201, status400)
 
 main :: IO ()
@@ -18,7 +18,7 @@ main = scotty 3000 $ do
     S.html $ renderContactPage query getContacts
 
   S.get "/contacts/new" $ do
-    S.html $ renderNewContact mkEmptyContact []
+    S.html emptyNewContactPage
 
   S.post "/contacts/new" $ do
     fn    :: T.Text <- formParam "first_name"
@@ -31,7 +31,7 @@ main = scotty 3000 $ do
     case validateContact c of
       Left errs -> do
         S.status status400
-        S.html $ renderNewContact c errs
+        S.html $ newContactPage c errs
       _ -> do
         S.status created201
         redirect "/contacts"

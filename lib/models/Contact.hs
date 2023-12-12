@@ -1,7 +1,7 @@
 module Contact where
 import Data.Text.Lazy as T
 import Prelude
-import Text.Show (Show(showsPrec), shows)
+import Data.Either (lefts)
 
 data Contact = Contact { firstN :: T.Text
                        , lastN :: T.Text
@@ -17,8 +17,8 @@ type PhoneNumber = T.Text
 type Email = T.Text
 
 instance Show Error where
-  show (FieldIsEmpty s) = show $ "Field '" <> s <> "' is empty.''"
-  show (PhoneNumberIsNot10Chars s) = show $ "Phone number '" <> s <> "' is not 10 characters long.''"
+  show (FieldIsEmpty s) = "Field " <> show s <> " is empty."
+  show (PhoneNumberIsNot10Chars s) = "Phone number " <> show s <> " is not 10 characters long."
 
 mkNonEmptyTextField :: T.Text -> T.Text -> Either [Error] T.Text
 mkNonEmptyTextField field "" = Left [FieldIsEmpty field]
@@ -43,8 +43,12 @@ mkEmptyContact :: Contact
 mkEmptyContact = Contact "" "" "" "" 0
 
 validateContact :: Contact -> Either [Error] Contact
-validateContact c = mkContact <$> validateFN (firstN c)
-                              <*> validateLN (lastN c)
-                              <*> validatePN (phone c)
-                              <*> validateEmail (email c)
-                              <*> pure (ident c)
+validateContact c = case ls of
+                       [] -> Right c
+                       _ -> Left ls
+  where
+    ls = mconcat $ lefts [ validateFN (firstN c)
+                         , validateLN (lastN c)
+                         , validatePN (phone c)
+                         , validateEmail (email c)
+                         ]
