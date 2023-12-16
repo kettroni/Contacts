@@ -43,11 +43,11 @@ mkEmptyContact :: Contact
 mkEmptyContact = Contact "" "" "" "" 0
 
 validateContact :: Contact -> Either [Error] Contact
-validateContact c = case ls of
+validateContact c = case errors of
                        [] -> Right c
-                       _ -> Left ls
+                       _ -> Left errors
   where
-    ls = mconcat $ lefts [ validateFN (firstN c)
+    errors = mconcat $ lefts [ validateFN (firstN c)
                          , validateLN (lastN c)
                          , validatePN (phone c)
                          , validateEmail (email c)

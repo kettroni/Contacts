@@ -1,7 +1,7 @@
 module Main where
 
-import Relude
-import Web.Scotty as S
+import Relude hiding (get)
+import Web.Scotty
 import Data.Text.Lazy as T
 import ContactTemplates
 import Contact (mkContact, validateContact)
@@ -10,17 +10,17 @@ import Network.HTTP.Types (created201, status400)
 
 main :: IO ()
 main = scotty 3000 $ do
-  S.get "/" $ do
+  get "/" $ do
     redirect "/contacts"
 
-  S.get "/contacts" $ do
+  get "/contacts" $ do
     query :: T.Text <- queryParam "q" `rescueStatusError` (pure . const "")
-    S.html $ renderContactPage query getContacts
+    html $ renderContactPage query getContacts
 
-  S.get "/contacts/new" $ do
-    S.html emptyNewContactPage
+  get "/contacts/new" $ do
+    html emptyNewContactPage
 
-  S.post "/contacts/new" $ do
+  post "/contacts/new" $ do
     fn    :: T.Text <- formParam "first_name"
     ln    :: T.Text <- formParam "last_name"
     email :: T.Text <- formParam "email"
@@ -30,10 +30,10 @@ main = scotty 3000 $ do
 
     case validateContact c of
       Left errs -> do
-        S.status status400
-        S.html $ newContactPage c errs
+        status status400
+        html $ newContactPage c errs
       _ -> do
-        S.status created201
+        status created201
         redirect "/contacts"
 
 rescueStatusError :: ActionM a -> (StatusError -> ActionM a) -> ActionM a

@@ -12,8 +12,8 @@ emptyNewContactPage = newContactPage mkEmptyContact []
 
 newContactPage :: Contact -> [Error] -> T.Text
 newContactPage contact errs = renderHtml $ do
-  docTypeHtml $ do
-    head tailwindHeaders
+  -- docTypeHtml $ do
+  --   head styleHeaders
 
     body $ do
       form ! HA.action "/contacts/new" ! HA.method "post" $ do
@@ -35,7 +35,7 @@ newContactPage contact errs = renderHtml $ do
             label ! HA.for "phone" $ "Phone"
             input ! HA.name "phone" ! HA.id "phone" ! HA.type_ "phone" ! HA.placeholder "Phone" ! HA.value (toValue $ phone contact)
 
-          p $ errorSpan errs
+          errorSpan errs
 
           button ! btnPri $ "Save"
       p $ a ! btnSnd ! HA.href "/contacts" $ "Back"
@@ -46,12 +46,12 @@ errorSpan errs = toHtml $ (\e -> span ! HA.class_ "error" $ show e) <$> errs
 renderContactPage :: T.Text -> [Contact] -> T.Text
 renderContactPage query contacts = renderHtml $ do
   docTypeHtml $ do
-    head tailwindHeaders
+    head styleHeaders
 
     body $ do
       contactSearch query
       contactsTable contacts
-      renderAddContact
+      a ! btnPri ! HA.href "/contacts/new" $ "Add Contact"
 
 contactSearch :: T.Text -> Html
 contactSearch query = do
@@ -69,9 +69,6 @@ contactsTable cs = table $ do
   tbody $ do
     mconcat $ contactTableRow <$> cs
 
-renderAddContact :: Html
-renderAddContact = p $ a ! btnPri ! HA.href "/contacts/new" $ "Add Contact"
-
 contactTableRow :: Contact -> Html
 contactTableRow c = tr ! HA.class_ "odd:bg-white even:bg-slate-50" $ do
   td $ toHtml $ firstN c
@@ -81,21 +78,15 @@ contactTableRow c = tr ! HA.class_ "odd:bg-white even:bg-slate-50" $ do
   td $ a ! HA.href ("/contacts/" <> (toValue . ident) c <> "/edit") $ "Edit"
   td $ a ! HA.href ("/contacts/" <> (toValue . ident) c) $ "View"
 
+styleHeaders :: Html
+styleHeaders = tailwindHeaders
+
 tailwindHeaders :: Html
 tailwindHeaders = do
   script ! HA.src "https://cdn.tailwindcss.com" $ ""
-  -- script "tailwind.config = {\
-  --       \  theme: {\
-  --       \    extend: {\
-  --       \      colors: {\
-  --       \        clifford: '#da3g3d',\
-  --       \      }\
-  --       \    }\
-  --       \  }\
-  --       \}"
 
 btnPri :: Attribute
 btnPri = HA.class_ "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
 
 btnSnd :: Attribute
-btnSnd = HA.class_ "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+btnSnd = HA.class_ "bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
