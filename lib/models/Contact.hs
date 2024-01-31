@@ -10,8 +10,8 @@ data Contact = Contact { firstN :: T.Text
                        , ident :: Int
                        } deriving Show
 
-data Error = FieldIsEmpty T.Text |
-             PhoneNumberIsNot10Chars T.Text
+data Error = FieldIsEmpty T.Text
+           | PhoneNumberIsNot10Chars T.Text
 
 type PhoneNumber = T.Text
 type Email = T.Text
@@ -48,7 +48,7 @@ validateContact c = case errors of
                        _ -> Left errors
   where
     errors = mconcat $ lefts [ validateFN (firstN c)
-                         , validateLN (lastN c)
-                         , validatePN (phone c)
-                         , validateEmail (email c)
-                         ]
+                             , validateLN (lastN c)
+                             , validatePN (phone c)
+                             , validateEmail (email c)
+                             ]

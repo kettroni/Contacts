@@ -62,10 +62,10 @@ contactSearch query = do
 contactsTable :: [Contact] -> Html
 contactsTable cs = table $ do
   thead $ do
-    tr "First name"
-    tr "Last name"
-    tr "Phone number"
-    tr "Email address"
+    th "First name"
+    th "Last name"
+    th "Phone number"
+    th "Email address"
   tbody $ do
     mconcat $ contactTableRow <$> cs
 
@@ -79,7 +79,8 @@ contactTableRow c = tr ! HA.class_ "odd:bg-white even:bg-slate-50" $ do
   td $ a ! HA.href ("/contacts/" <> (toValue . ident) c) $ "View"
 
 styleHeaders :: Html
-styleHeaders = tailwindHeaders
+styleHeaders = mempty
+--tailwindHeaders
 
 tailwindHeaders :: Html
 tailwindHeaders = do
